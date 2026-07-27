@@ -11,13 +11,21 @@ The application is now fully operational in a production-style environment on an
 ### Architecture Diagram
 ```mermaid
 graph TD
-    User([User Browser]) -->|HTTPS / WSS| Server[Public IP: AWS EC2]
-    Server -->|Port 443| Nginx[NGINX Reverse Proxy Container]
+    User([User Browser]) -- "1. Request https://ephemeral-server.ddnsgeek.com" --> DNS[DNS: ddnsgeek.com]
+    DNS -- "2. Resolves to Public IP" --> EC2[AWS EC2 Instance]
     
-    subgraph Docker Network
-        Nginx -.->|Serve Static HTML| Frontend[Frontend Directory Volume]
-        Nginx -.->|Read Certificates| SSL[Let's Encrypt Volume]
-        Nginx -->|WS Proxy Port:8000| Backend[FastAPI Backend Container]
+    subgraph Docker Host [AWS EC2]
+        EC2 -- "3. Port 80 & 443 mapped to" --> Nginx
+        
+        subgraph Docker Network [Internal Bridge Network]
+            Nginx[Nginx Container\nchat-nginx\nRole: SSL Termination & Reverse Proxy]
+            Backend[Python FastAPI Container\nchat-backend\nRole: Real-Time WebSocket Server]
+            
+            Nginx -- "4a. Request for UI (/) -> Serves static files" --> VolFrontend[(Mounted Volume:\n./frontend)]
+            Nginx -. "Reads SSL Certificates" .-> VolSSL[(Mounted Volume:\n/etc/letsencrypt)]
+            
+            Nginx -- "4b. Request for /ws -> Adds Upgrade Headers\nProxies traffic to http://backend:8000" --> Backend
+        end
     end
 ```
 

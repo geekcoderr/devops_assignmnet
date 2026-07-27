@@ -17,7 +17,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            # Navigate to the repo directory (assuming it's cloned as 'devops' in the home directory)
-            cd devops || { echo "Directory devops not found on server"; exit 1; }
+            # Navigate to the repo directory
+            cd devops_assignmnet || { echo "Directory devops_assignmnet not found on server"; exit 1; }
             git pull origin main
             docker-compose up -d --build
