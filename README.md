@@ -58,7 +58,7 @@ On every `push` to the `main` branch, the pipeline triggers an Ubuntu runner tha
 1. Connects securely to the AWS EC2 instance via SSH using `appleboy/ssh-action`.
 2. Navigates to the project directory on the EC2 server.
 3. Executes a `git pull` to fetch the latest code.
-4. Runs `docker-compose down` followed by `docker-compose up -d --build` to cleanly rebuild and restart the containers.
+4. Runs `docker compose down` followed by `docker compose up -d --build` to cleanly rebuild and restart the containers.
 
 ### Configured Secrets (Variables)
 To allow the pipeline to authenticate with the EC2 server securely, I added the following variables to the GitHub Repository Secrets:

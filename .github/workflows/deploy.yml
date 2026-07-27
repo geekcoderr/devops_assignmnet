@@ -20,4 +20,4 @@ jobs:
             # Navigate to the repo directory
             cd devops_assignmnet || { echo "Directory devops_assignmnet not found on server"; exit 1; }
             git pull origin main
-            docker-compose up -d --build
+            docker compose up -d --build
