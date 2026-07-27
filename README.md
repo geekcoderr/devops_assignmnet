@@ -1,5 +1,7 @@
 # Real-Time WebSocket Application Deployment
 
+**Live Access URL:** [https://ephemeral-server.ddnsgeek.com/](https://ephemeral-server.ddnsgeek.com/)
+
 ## 1. Project Overview
 This repository contains my final submission for the DevOps Engineering Assignment. The objective was to debug and fix a broken staging environment for a real-time WebSocket chat application. I have successfully debugged the container configurations, fixed the networking, deployed the application to an AWS EC2 instance, and fully automated the deployment using a GitHub Actions CI/CD pipeline. 
 
