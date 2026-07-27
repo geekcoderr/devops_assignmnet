@@ -13,20 +13,22 @@ The application is now fully operational in a production-style environment on an
 ### Architecture Diagram
 ```mermaid
 graph TD
-    User([User Browser]) -- "1. Access URL:\nhttps://ephemeral-server.ddnsgeek.com" --> DNS[DNS Provider\nddnsgeek.com]
-    DNS -- "2. Resolves to Public IP" --> EC2[AWS EC2 Instance\nHost Machine]
+    User([User Browser]) -->|1. Access URL: ephemeral-server.ddnsgeek.com| DNS[DNS Provider: ddnsgeek.com]
+    DNS -->|2. Resolves to Public IP| EC2[AWS EC2 Host Machine]
     
-    subgraph Docker Host [AWS EC2 Host]
-        EC2 -- "3. Inbound Traffic on Port 80 & 443" --> Nginx
+    subgraph Docker_Host [AWS EC2 Host]
+        EC2 -->|3. Inbound Traffic Ports 80 & 443| Nginx
         
-        subgraph Docker Network [Docker Compose Bridge Network]
-            Nginx["Nginx Container (chat-nginx)\nImage: nginx:alpine\nRole: SSL Termination & Reverse Proxy"]
-            Backend["FastAPI Container (chat-backend)\nImage: python:3.11-slim\nRole: Real-Time WebSocket Server"]
+        subgraph Docker_Network [Docker Compose Bridge Network]
+            Nginx[Nginx Container: chat-nginx<br>Image: nginx:alpine<br>Role: Reverse Proxy & SSL]
+            Backend[FastAPI Container: chat-backend<br>Image: python:3.11-slim<br>Role: WebSocket Server]
+            VolFrontend[(Volume:<br>./frontend)]
+            VolSSL[(Volume:<br>/etc/letsencrypt)]
             
-            Nginx -- "4a. Request for UI (/) -> Serves static files" --> VolFrontend[("Mounted Volume:\n./frontend")]
-            Nginx -. "Reads SSL Certificates" .-> VolSSL[("Mounted Volume:\n/etc/letsencrypt")]
+            Nginx -->|4a. UI Request / <br>Serves static files| VolFrontend
+            Nginx -.->|Reads SSL Certs| VolSSL
             
-            Nginx -- "4b. Request for /ws -> Adds Upgrade Headers\nProxies traffic to http://backend:8000" --> Backend
+            Nginx -->|4b. WS Request /ws <br>Proxies to http://backend:8000| Backend
         end
     end
 ```
