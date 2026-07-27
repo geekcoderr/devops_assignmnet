@@ -11,27 +11,7 @@ Additionally, I successfully implemented the optional **Bonus requirement**: sec
 The application is now fully operational in a production-style environment on an AWS EC2 instance. It automatically redirects all standard HTTP traffic to a secure HTTPS connection. Multiple users can seamlessly connect via WebSockets and chat in real-time. 
 
 ### Architecture Diagram
-```mermaid
-graph TD
-    User([User Browser]) -->|1. Access URL: ephemeral-server.ddnsgeek.com| DNS[DNS Provider: ddnsgeek.com]
-    DNS -->|2. Resolves to Public IP| EC2[AWS EC2 Host Machine]
-    
-    subgraph Docker_Host [AWS EC2 Host]
-        EC2 -->|3. Inbound Traffic Ports 80 & 443| Nginx
-        
-        subgraph Docker_Network [Docker Compose Bridge Network]
-            Nginx[Nginx Container: chat-nginx<br>Image: nginx:alpine<br>Role: Reverse Proxy & SSL]
-            Backend[FastAPI Container: chat-backend<br>Image: python:3.11-slim<br>Role: WebSocket Server]
-            VolFrontend[(Volume:<br>./frontend)]
-            VolSSL[(Volume:<br>/etc/letsencrypt)]
-            
-            Nginx -->|4a. UI Request / <br>Serves static files| VolFrontend
-            Nginx -.->|Reads SSL Certs| VolSSL
-            
-            Nginx -->|4b. WS Request /ws <br>Proxies to http://backend:8000| Backend
-        end
-    end
-```
+![Architecture Diagram](architecture.svg)
 
 ## 3. How Docker Containers are Set Up
 The infrastructure is orchestrated using Docker Compose to run two primary containers:
